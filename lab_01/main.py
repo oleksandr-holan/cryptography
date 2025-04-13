@@ -59,22 +59,47 @@ def display_frequencies(frequencies, total_chars):
     return sorted_freq
 
 
-def suggest_caesar_shifts(frequencies):
+def detect_language(text):
+    """Визначає мову тексту (українська чи англійська)"""
+    # Підраховуємо кількість символів українського та англійського алфавітів
+    ukr_alphabet = set("абвгґдеєжзиіїйклмнопрстуфхцчшщьюя")
+    eng_alphabet = set("abcdefghijklmnopqrstuvwxyz")
+
+    text_lower = text.lower()
+
+    ukr_count = sum(1 for char in text_lower if char in ukr_alphabet)
+    eng_count = sum(1 for char in text_lower if char in eng_alphabet)
+
+    if ukr_count > eng_count:
+        return "ukrainian"
+    else:
+        return "english"
+
+
+def suggest_caesar_shifts(frequencies, language):
     """Пропонує можливі зсуви для шифру Цезаря"""
-    # Найчастіші літери в українській мові
+    # Найчастіші літери в українській та англійській мовах
     ukr_common_letters = ["о", "а", "н", "і", "и", "в", "е", "р", "т", "с"]
+    eng_common_letters = ["e", "t", "a", "o", "i", "n", "s", "h", "r", "d"]
+
+    # Вибираємо відповідний алфавіт і найчастіші літери
+    if language == "ukrainian":
+        alphabet = "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
+        common_letters = ukr_common_letters
+        print("\nВизначено українську мову тексту")
+    else:
+        alphabet = "abcdefghijklmnopqrstuvwxyz"
+        common_letters = eng_common_letters
+        print("\nВизначено англійську мову тексту")
 
     # Беремо найчастіші літери з зашифрованого тексту
-    most_common = [char for char, _ in frequencies[:5]]
+    most_common = [char for char, _ in frequencies[:5] if char in alphabet]
 
     print("\nМожливі ключі шифру Цезаря:")
     print("Припускаючи, що найчастіша літера це:")
 
-    for common_letter in ukr_common_letters[:3]:  # Перевіряємо для 3 найчастіших літер
+    for common_letter in common_letters[:3]:  # Перевіряємо для 3 найчастіших літер
         for encrypted_letter in most_common:
-            # Український алфавіт
-            alphabet = "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
-
             # Знаходимо позиції літер в алфавіті
             pos_common = alphabet.find(common_letter)
             pos_encrypted = alphabet.find(encrypted_letter)
@@ -84,10 +109,11 @@ def suggest_caesar_shifts(frequencies):
                 shift = (pos_encrypted - pos_common) % len(alphabet)
                 print(f"'{common_letter}' -> '{encrypted_letter}': зсув = {shift}")
 
+    return alphabet
 
-def decrypt_with_shift(text, shift):
+
+def decrypt_with_shift(text, shift, alphabet):
     """Розшифровує текст із заданим зсувом"""
-    alphabet = "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
     result = ""
 
     for char in text:
@@ -112,7 +138,7 @@ def decrypt_with_shift(text, shift):
     return result
 
 
-def try_decrypt(text):
+def try_decrypt(text, alphabet):
     """Дозволяє користувачу спробувати різні зсуви для розшифрування"""
     while True:
         try:
@@ -123,19 +149,21 @@ def try_decrypt(text):
             if shift == -1:
                 break
 
-            decrypted = decrypt_with_shift(text, shift)
+            decrypted = decrypt_with_shift(text, shift, alphabet)
             print("\nРозшифрований текст з зсувом", shift, ":")
             print("-" * 50)
             print(decrypted[:500])  # Показуємо перші 500 символів
             print("-" * 50)
 
             choice = input("Це правильне розшифрування? (так/ні): ").lower()
-            if choice == "так":
+            if choice == "так" or choice == "yes" or choice == "y":
                 print("\nУспішно розшифровано з ключем (зсувом):", shift)
-                return shift
+                return shift, decrypted
 
         except ValueError:
             print("Будь ласка, введіть ціле число.")
+
+    return None, None
 
 
 def main():
@@ -146,19 +174,21 @@ def main():
     if not encrypted_text:
         return
 
-    print("\nЗашифрований текст (перші 100 символів):")
+    print(f"\nЗашифрований текст (перші 100 символів):")
     print(encrypted_text[:100])
+
+    # Визначаємо мову тексту
+    language = detect_language(encrypted_text)
 
     frequencies, total_chars = calculate_frequencies(encrypted_text)
     sorted_freq = display_frequencies(frequencies, total_chars)
 
-    suggest_caesar_shifts(sorted_freq)
+    alphabet = suggest_caesar_shifts(sorted_freq, language)
 
-    found_key = try_decrypt(encrypted_text)
+    found_key, decrypted_text = try_decrypt(encrypted_text, alphabet)
 
     if found_key is not None:
         # Зберігаємо розшифрований текст
-        decrypted_text = decrypt_with_shift(encrypted_text, found_key)
         output_path = os.path.splitext(file_path)[0] + "_decrypted.txt"
 
         try:
