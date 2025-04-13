@@ -1,0 +1,5 @@
+Encryption key: a=5, b=25
+
+Encryption Table:
+Plaintext:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+Ciphertext: ZEJOTYDINSXCHMRWBGLQVAFKPU
