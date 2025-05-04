@@ -159,8 +159,8 @@ def compare_data(data1, data2):
             diff_count += 1
 
     print(f"   Розшифрований оригінал ({len1} байт): {data1.hex()}")
-    print(f"   Розшифр. з помилкою ({len2} байт): {data2.hex()}")
-    print(f"   Мапа відмінностей      : {''.join(diff_map)}")
+    print(f"   Розшифр. з помилкою ({len2} байт):    {data2.hex()}")
+    print(f"   Мапа відмінностей:                {''.join(diff_map)}")
     print(f"   Знайдено відмінностей: {diff_count} байт")
     return diff_count
 
