@@ -93,7 +93,7 @@ def generate_keys(key_10bit):
 
 
 # --- Функція f (внутрішня частина FK) ---
-def function_f(right_4bit, subkey_8bit):
+def function_f(right_4bit, subkey_8bit, s0, s1):
     """Виконує операції всередині циклової функції FK."""
     # Розширення/Перестановка (E/P)
     expanded_bits = permute(right_4bit, EP_TABLE)
@@ -105,8 +105,8 @@ def function_f(right_4bit, subkey_8bit):
     left_xor, right_xor = split_half(xored_bits)
 
     # Заміна в S-блоках
-    s0_output = get_sbox_value(left_xor, S0)
-    s1_output = get_sbox_value(right_xor, S1)
+    s0_output = get_sbox_value(left_xor, s0)
+    s1_output = get_sbox_value(right_xor, s1)
 
     # Об'єднання та перестановка P4
     p4_output = permute(s0_output + s1_output, P4_TABLE)
@@ -115,10 +115,10 @@ def function_f(right_4bit, subkey_8bit):
 
 
 # --- Циклова функція FK ---
-def function_fk(data_8bit, subkey_8bit):
+def function_fk(data_8bit, subkey_8bit, s0, s1):
     """Виконує повну циклову функцію FK."""
     left, right = split_half(data_8bit)
-    f_result = function_f(right, subkey_8bit)
+    f_result = function_f(right, subkey_8bit, s0, s1)
     new_left = xor(left, f_result)
     # Результат FK - це (L XOR f(R, K), R)
     return new_left + right
@@ -132,7 +132,7 @@ def swap(data_8bit):
 
 
 # --- Шифрування одного 8-бітного блоку ---
-def encrypt_block(plaintext_8bit, key_10bit):
+def encrypt_block(plaintext_8bit, key_10bit, s0, s1):
     """Шифрує один 8-бітний блок за допомогою S-DES."""
     if len(plaintext_8bit) != 8 or not all(c in "01" for c in plaintext_8bit):
         raise ValueError("Відкритий текст повинен бути 8-бітним двійковим рядком")
@@ -143,13 +143,13 @@ def encrypt_block(plaintext_8bit, key_10bit):
     ip_result = permute(plaintext_8bit, IP_TABLE)
 
     # 2. Циклова функція FK з K1
-    fk1_result = function_fk(ip_result, k1)
+    fk1_result = function_fk(ip_result, k1, s0, s1)
 
     # 3. Перестановка SW
     swapped = swap(fk1_result)
 
     # 4. Циклова функція FK з K2
-    fk2_result = function_fk(swapped, k2)
+    fk2_result = function_fk(swapped, k2, s0, s1)
 
     # 5. Кінцева перестановка IP-1
     ciphertext_8bit = permute(fk2_result, IP_INV_TABLE)
@@ -158,7 +158,7 @@ def encrypt_block(plaintext_8bit, key_10bit):
 
 
 # --- Розшифрування одного 8-бітного блоку ---
-def decrypt_block(ciphertext_8bit, key_10bit):
+def decrypt_block(ciphertext_8bit, key_10bit, s0, s1):
     """Розшифровує один 8-бітний блок за допомогою S-DES."""
     if len(ciphertext_8bit) != 8 or not all(c in "01" for c in ciphertext_8bit):
         raise ValueError("Шифротекст повинен бути 8-бітним двійковим рядком")
@@ -169,13 +169,13 @@ def decrypt_block(ciphertext_8bit, key_10bit):
     ip_result = permute(ciphertext_8bit, IP_TABLE)
 
     # 2. Циклова функція FK з K2 (зворотний порядок ключів!)
-    fk1_result = function_fk(ip_result, k2)
+    fk1_result = function_fk(ip_result, k2, s0, s1)
 
     # 3. Перестановка SW
     swapped = swap(fk1_result)
 
     # 4. Циклова функція FK з K1 (зворотний порядок ключів!)
-    fk2_result = function_fk(swapped, k1)
+    fk2_result = function_fk(swapped, k1, s0, s1)
 
     # 5. Кінцева перестановка IP-1
     plaintext_8bit = permute(fk2_result, IP_INV_TABLE)
