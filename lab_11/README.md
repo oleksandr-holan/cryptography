@@ -70,6 +70,16 @@ c2a3c7e8c9f5e8f3 c3a3c7e8c9f5e8f3 c2a3c7e8c9f5e8f3 c2a3c7e8c9f5e8f3 9c3f0f4f5b7b
 Знайдено відмінностей: 16 байт
 ```
 
+**AES / CFB (помилка в блоці 0):**
+```
+Внесено помилку в блок 0 (байт 0): 0d -> 0c
+Пошкоджений шифротекст (64 байт): 0c2f338a b6ee5b99 6cf2f91d fe76bb88 2204c773 ab29c12a 31463bc9 7bfca75d ec9ef68d e12f894b 601eec2d 6ce37b15 cbbd3a69 d4d84ef6 b51dbbc8 b48b0094
+Розшифрований оригінал (64 байт): d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0
+Розшифр. з помилкою (64 байт):    d193d0be d0bbd0b0 d0bdd18c 20d09ed0 b6605e8f 07db1cc9 bf0772f8 c73007ea d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0
+Мапа відмінностей:                vv                                  vvvvvvvv vvvvvvvv vvvvvvvv vvvvvvvv                                                                
+Знайдено відмінностей: 17 байт
+```
+
 **AES / OFB (помилка в блоці 0):**
 ```
 Внесено помилку в блок 0 (байт 0): a1 -> a0
@@ -80,15 +90,6 @@ c2a3c7e8c9f5e8f3 c3a3c7e8c9f5e8f3 c2a3c7e8c9f5e8f3 c2a3c7e8c9f5e8f3 9c3f0f4f5b7b
 Знайдено відмінностей: 1 байт
 ```
 
-**AES / CFB (помилка в блоці 0):**
-```
-Внесено помилку в блок 0 (байт 0): 0d -> 0c
-Пошкоджений шифротекст (64 байт): 0c2f338a b6ee5b99 6cf2f91d fe76bb88 2204c773 ab29c12a 31463bc9 7bfca75d ec9ef68d e12f894b 601eec2d 6ce37b15 cbbd3a69 d4d84ef6 b51dbbc8 b48b0094
-Розшифрований оригінал (64 байт): d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0
-Розшифр. з помилкою (64 байт):    d193d0be d0bbd0b0 d0bdd18c 20d09ed0 b6605e8f 07db1cc9 bf0772f8 c73007ea d093d0be d0bbd0b0 d0bdd18c 20d09ed0 d093d0be d0bbd0b0 d0bdd18c 20d09ed0
-Мапа відмінностей:                vv                                  vvvvvvvv vvvvvvvv vvvvvvvv vvvvvvvv                                                                
-Знайдено відмінностей: 17 байт
-```
 
 ### Аналіз отриманих результатів
 
@@ -105,7 +106,7 @@ c2a3c7e8c9f5e8f3 c3a3c7e8c9f5e8f3 c2a3c7e8c9f5e8f3 c2a3c7e8c9f5e8f3 9c3f0f4f5b7b
 #### Режим CFB:
 - Помилка в шифротексті впливає на відповідний байт та наступні байти в межах блоку.
 - Поширення помилки залежить від розміру сегменту CFB.
-- Для Blowfish при пошкодженні блоку 0 було пошкоджено 8 байт (один блок).
+- Для AES при пошкодженні блоку 0 було пошкоджено 17 байт (два блоки).
 
 #### Режим OFB:
 - Помилка в шифротексті впливає тільки на відповідний байт відкритого тексту.
