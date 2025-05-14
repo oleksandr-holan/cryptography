@@ -268,7 +268,7 @@ def process_text(text, key_10bit, mode):
 
     for i in range(0, len(binary_input), 8):
         block = binary_input[i : i + 8]
-        processed_block = operation(block, key_10bit)
+        processed_block = operation(block, key_10bit, S0, S1)
         binary_output += processed_block
 
     if mode == "encrypt":
