@@ -1,7 +1,6 @@
 import copy
 import time
 
-# Імпортуємо код з попередньої лабораторної роботи
 from lab_04.s_des_coders import (
     S0,
     S1,
@@ -144,7 +143,6 @@ def modify_sbox(sbox, row, col, new_value):
 
 
 def analyze_sbox_changes(plaintext, key, original_s0, original_s1):
-    """Аналізує вплив зміни S-блоків на шифрування."""
     """Аналізує вплив зміни S-блоків на шифрування."""
     # Отримуємо базовий шифротекст з оригінальними S-блоками
     base_cipher = encrypt_block(plaintext, key, original_s0, original_s1)

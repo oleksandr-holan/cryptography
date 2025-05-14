@@ -174,7 +174,7 @@ def main():
     if not encrypted_text:
         return
 
-    print(f"\nЗашифрований текст (перші 100 символів):")
+    print("\nЗашифрований текст (перші 100 символів):")
     print(encrypted_text[:100])
 
     # Визначаємо мову тексту
